@@ -1,6 +1,18 @@
 # Inventory & Order Management System
 
+**✅ LIVE DEPLOYMENT**: See [QUICK_REFERENCE.md](QUICK_REFERENCE.md) and [DEPLOYMENT_LIVE.md](DEPLOYMENT_LIVE.md)
+
 A full-stack inventory dashboard with a FastAPI/PostgreSQL API and a React/Vite client. It manages products, customers, and orders; order placement snapshots prices and adjusts stock in the same database transaction.
+
+## 🎯 Quick Links (Live URLs)
+
+| | |
+|---|---|
+| **📱 App** | https://inventory-order-management-system-navy-eta.vercel.app |
+| **⚙️ API** | https://inventory-order-api-5wob.onrender.com |
+| **📖 API Docs** | https://inventory-order-api-5wob.onrender.com/docs |
+
+**👉 [See QUICK_REFERENCE.md for more details](QUICK_REFERENCE.md)**
 
 ## Repository layout
 
@@ -57,23 +69,33 @@ Open http://127.0.0.1:5173. The API health check is at http://127.0.0.1:8000/hea
   - 📦 **Docker setup guide** → [Docker & Deployment Guide](docs/deployment.md)
   - 🔧 **Environment variables reference** → [Environment Variables](docs/environment-variables.md)
 
+## 🚀 Live Deployment
+
+Application is now live and deployed:
+
+- **Frontend**: https://inventory-order-management-system-navy-eta.vercel.app
+- **Backend API**: https://inventory-order-api-5wob.onrender.com
+- **API Docs**: https://inventory-order-api-5wob.onrender.com/docs
+- **API ReDoc**: https://inventory-order-api-5wob.onrender.com/redoc
+
 ## Containers and free-tier hosting
 
 The backend and frontend are independent deployable applications that can be containerized and deployed to cloud platforms at no cost:
 
 ```
-┌─────────────────────────────────┐
-│ Vercel (Free)                   │
-│ React + Vite Frontend           │
-│ https://your-app.vercel.app     │
-└─────────────────────────────────┘
+┌──────────────────────────────────────┐
+│ Vercel (Frontend)                    │
+│ https://inventory-order-management-  │
+│   system-navy-eta.vercel.app         │
+│ React + Vite                         │
+└──────────────────────────────────────┘
               ↓ API calls
-┌─────────────────────────────────┐
-│ Render (Free)                   │
-│ FastAPI Backend                 │
-│ https://your-api.onrender.com   │
-│ + PostgreSQL Database           │
-└─────────────────────────────────┘
+┌──────────────────────────────────────┐
+│ Render (Backend)                     │
+│ https://inventory-order-api-5wob.    │
+│   onrender.com                       │
+│ FastAPI + PostgreSQL                 │
+└──────────────────────────────────────┘
 ```
 
 **Backend Docker build** (Render-ready):

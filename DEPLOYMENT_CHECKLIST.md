@@ -115,7 +115,7 @@ Use this checklist to track your deployment progress. Check off items as you com
 - [ ] Got Vercel URL (e.g., `https://xyz.vercel.app`)
 
 ### Verify Frontend
-- [ ] Vercel URL copied: `https://YOUR-VERCEL-URL.vercel.app`
+- [ ] Vercel URL copied: `https://inventory-order-management-system-navy-eta.vercel.app`
 - [ ] Opened URL in browser - app loads
 - [ ] No console errors
 - [ ] Can navigate between pages
@@ -130,7 +130,7 @@ Use this checklist to track your deployment progress. Check off items as you com
 - [ ] Select `inventory-order-api` service
 - [ ] Go to "Environment" tab
 - [ ] Find `CORS_ORIGINS` variable
-- [ ] Update from `*` to: `https://YOUR-VERCEL-URL.vercel.app`
+- [ ] Update from `*` to: `https://inventory-order-management-system-navy-eta.vercel.app`
 - [ ] Click "Save"
 - [ ] Wait 2 minutes for redeploy
 

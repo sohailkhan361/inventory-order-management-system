@@ -8,19 +8,23 @@ This guide covers deploying the Inventory & Order Management System with:
 
 ## Architecture Overview
 
+## Architecture Overview
+
 ```
-┌─────────────────────────────────────────────────────┐
-│ Vercel (Frontend) - React + Vite                    │
-│ - Deployed at: https://your-app.vercel.app         │
-│ - Auto-builds & deploys on Git push                 │
-└─────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────┐
+│ Vercel (Frontend) - React + Vite                         │
+│ - Deployed at: https://inventory-order-management-      │
+│   system-navy-eta.vercel.app                             │
+│ - Auto-builds & deploys on Git push                      │
+└──────────────────────────────────────────────────────────┘
                          ↓ API calls
-┌─────────────────────────────────────────────────────┐
-│ Render (Backend) - FastAPI + PostgreSQL             │
-│ - API at: https://your-api.onrender.com            │
-│ - Database auto-created by Render Blueprint         │
-│ - Spins down after 15 min inactivity (free tier)    │
-└─────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────┐
+│ Render (Backend) - FastAPI + PostgreSQL                  │
+│ - API at: https://inventory-order-api-5wob.onrender.com │
+│ - Docs: /docs, ReDoc: /redoc                             │
+│ - Database auto-created by Render Blueprint              │
+│ - Spins down after 15 min inactivity (free tier)         │
+└──────────────────────────────────────────────────────────┘
 ```
 
 ---
