@@ -27,81 +27,87 @@ export default function AppLayout({ children }) {
   const closeSidebar = () => setSidebarOpen(false);
 
   return (
-    <div className="app-shell">
-      {/* Overlay */}
-      <div
-        className={`sidebar-overlay ${sidebarOpen ? 'open' : ''}`}
-        onClick={closeSidebar}
-      />
+    <div className="min-h-screen flex bg-[#09090b] font-sans text-zinc-100 antialiased">
+      {/* Sidebar Overlay (Mobile only) */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/60 backdrop-blur-xs z-40 md:hidden transition-opacity"
+          onClick={closeSidebar}
+        />
+      )}
 
-      {/* Sidebar */}
-      <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
-        <div className="sidebar-logo">
-          <div className="logo-icon">
-            <Boxes size={18} color="#fff" />
+      {/* Sidebar Container */}
+      <aside className={`
+        fixed inset-y-0 left-0 z-55 w-60 bg-[#09090b] border-r border-zinc-900/80
+        flex flex-col transform transition-transform duration-200 ease-in-out
+        md:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+      `}>
+        {/* Logo Section */}
+        <div className="h-14 border-b border-zinc-900/80 flex items-center gap-2.5 px-5">
+          <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center">
+            <Boxes size={16} className="text-zinc-100" />
           </div>
-          <div className="sidebar-logo-text">
-            Inventory
-            <span>Order Management</span>
+          <div className="flex flex-col">
+            <span className="text-[13px] font-semibold text-zinc-100 tracking-tight leading-none">Inventory</span>
+            <span className="text-[10px] text-zinc-500 font-medium tracking-tight mt-0.5">Order Management</span>
           </div>
         </div>
 
-        <nav className="sidebar-nav">
-          <div className="nav-section-label">Main Menu</div>
+        {/* Navigation links */}
+        <nav className="flex-1 px-3 py-4 space-y-1">
+          <div className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest px-3 mb-2.5">
+            Main Menu
+          </div>
           {NAV_ITEMS.map(({ to, icon: Icon, label }) => (
             <NavLink
               key={to}
               to={to}
               end={to === '/'}
-              className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+              className={({ isActive }) => `
+                flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] font-medium transition-colors select-none
+                ${isActive 
+                  ? 'bg-zinc-900 text-zinc-100 border-l-2 border-zinc-400 pl-2.5' 
+                  : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/50'}
+              `}
               onClick={closeSidebar}
             >
-              <Icon size={17} className="nav-icon" />
+              <Icon size={15} />
               {label}
             </NavLink>
           ))}
         </nav>
 
-        <div style={{
-          padding: '16px 20px',
-          borderTop: '1px solid var(--border)',
-          fontSize: '.75rem',
-          color: 'var(--text-muted)',
-        }}>
-          v1.0.0 &middot; Inventory System
+        {/* Footer info */}
+        <div className="p-4 border-t border-zinc-900/80 text-[10px] text-zinc-650 flex items-center justify-between">
+          <span>v1.0.0 &middot; SaaS UI</span>
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500/70" />
         </div>
       </aside>
 
-      {/* Main */}
-      <div className="main-content">
-        {/* Topbar */}
-        <header className="topbar">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col md:pl-60 min-h-screen">
+        {/* Sticky Topbar */}
+        <header className="sticky top-0 z-30 h-14 bg-[#09090b]/85 backdrop-blur-md border-b border-zinc-900/80 flex items-center justify-between px-6 md:px-8">
+          <div className="flex items-center gap-3">
             <button
-              id="sidebar-toggle"
-              className="hamburger"
+              className="md:hidden text-zinc-400 hover:text-zinc-200 transition-colors p-1.5 -ml-1 rounded-lg hover:bg-zinc-900"
               onClick={() => setSidebarOpen((o) => !o)}
-              aria-label="Toggle sidebar"
+              aria-label="Toggle Navigation"
             >
-              {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
+              {sidebarOpen ? <X size={18} /> : <Menu size={18} />}
             </button>
-            <span className="topbar-title">{title}</span>
+            <h1 className="text-sm font-semibold tracking-tight text-zinc-100">{title}</h1>
           </div>
-          <div className="topbar-right">
-            <div style={{
-              width: 32, height: 32,
-              background: 'linear-gradient(135deg, var(--accent), var(--purple))',
-              borderRadius: '50%',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '.8rem', fontWeight: 700, color: '#fff',
-            }}>
-              A
+          
+          <div className="flex items-center gap-3">
+            <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-zinc-800 to-zinc-700 border border-zinc-700 flex items-center justify-center shadow-inner">
+              <span className="text-[11px] font-bold text-zinc-200">A</span>
             </div>
           </div>
         </header>
 
-        {/* Page content */}
-        <main className="page-body">
+        {/* Page Content Body */}
+        <main className="flex-1 p-6 md:p-8 max-w-6xl w-full mx-auto">
           {children}
         </main>
       </div>

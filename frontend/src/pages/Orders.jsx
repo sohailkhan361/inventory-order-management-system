@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { toast } from 'react-toastify';
-import { Plus, Eye, Trash2, ShoppingCart, Calendar, User, DollarSign, PlusCircle, MinusCircle, Info } from 'lucide-react';
+import { Plus, Eye, Trash2, ShoppingCart, Calendar, PlusCircle, MinusCircle } from 'lucide-react';
 import { orderService, customerService, productService } from '../services';
 import { useFetch } from '../hooks/useFetch';
 import { Spinner, EmptyState, Badge } from '../components/UI';
@@ -158,7 +158,7 @@ export default function Orders() {
   };
 
   if (loading) return <Spinner />;
-  if (error) return <div className="error-message">Error: {error}</div>;
+  if (error) return <div className="text-rose-455 text-xs py-10 text-center">Error: {error}</div>;
 
   const orders = data?.items || [];
 
@@ -169,84 +169,88 @@ export default function Orders() {
   );
 
   return (
-    <div>
-      <div className="page-header">
+    <div className="space-y-6">
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1>Orders</h1>
-          <p>Create new client orders and manage previous transactions.</p>
+          <h2 className="text-xl font-bold tracking-tight text-white">Orders</h2>
+          <p className="text-xs text-zinc-400 mt-1">Compile client checkouts, view historical records, and cancel orders.</p>
         </div>
-        <button className="btn btn-primary" onClick={handleOpenCreateModal} disabled={actionLoading}>
-          <Plus size={16} /> Create Order
+        <button 
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-100 text-zinc-950 text-xs font-semibold rounded-lg hover:bg-zinc-200 transition-colors select-none self-start sm:self-auto"
+          onClick={handleOpenCreateModal} 
+          disabled={actionLoading}
+        >
+          <Plus size={14} /> Create Order
         </button>
       </div>
 
-      <div className="card" style={{ marginBottom: 20 }}>
-        <div className="card-header">
-          <div className="search-bar">
-            <ShoppingCart size={16} />
+      <div className="bg-[#09090b] border border-zinc-900 rounded-xl overflow-hidden shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 px-5 py-4 border-b border-zinc-900 bg-zinc-950/20">
+          <div className="relative w-full max-w-xs">
+            <ShoppingCart size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
             <input
               type="text"
-              placeholder="Search by customer name or Order ID..."
+              className="w-full bg-[#09090b] border border-zinc-800 text-zinc-100 rounded-lg py-1.5 pl-9 pr-3 text-xs placeholder:text-zinc-550 outline-none focus:border-zinc-700 transition-colors"
+              placeholder="Search by customer or Order ID..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <div style={{ fontSize: '.85rem', color: 'var(--text-secondary)' }}>
+          <div className="text-xs text-zinc-500 font-medium select-none">
             Showing {filteredOrders.length} of {orders.length} orders
           </div>
         </div>
 
         {filteredOrders.length === 0 ? (
           <EmptyState
-            icon={<ShoppingCart size={48} />}
-            title="No orders found"
-            description={searchTerm ? "Try adjusting your search query." : "Start by creating a new order."}
+            icon={<ShoppingCart size={36} />}
+            title="No orders placed"
+            description={searchTerm ? "Try adjusting your search query." : "Start by creating a new customer order."}
           />
         ) : (
-          <div className="table-wrap">
-            <table>
+          <div className="overflow-x-auto">
+            <table className="w-full text-[13px] border-collapse">
               <thead>
-                <tr>
-                  <th>Order #</th>
-                  <th>Customer</th>
-                  <th>Total Amount</th>
-                  <th>Date Placed</th>
-                  <th>Items Count</th>
-                  <th style={{ textAlign: 'right' }}>Actions</th>
+                <tr className="bg-zinc-950/40 border-b border-zinc-900">
+                  <th className="text-[11px] font-semibold text-zinc-400 tracking-wider text-left uppercase px-5 py-2.5">Order #</th>
+                  <th className="text-[11px] font-semibold text-zinc-400 tracking-wider text-left uppercase px-5 py-2.5">Customer</th>
+                  <th className="text-[11px] font-semibold text-zinc-400 tracking-wider text-left uppercase px-5 py-2.5">Total Amount</th>
+                  <th className="text-[11px] font-semibold text-zinc-400 tracking-wider text-left uppercase px-5 py-2.5">Date Placed</th>
+                  <th className="text-[11px] font-semibold text-zinc-400 tracking-wider text-left uppercase px-5 py-2.5">Items Count</th>
+                  <th className="text-[11px] font-semibold text-zinc-400 tracking-wider text-right uppercase px-5 py-2.5">Actions</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-zinc-900/60">
                 {filteredOrders.map((o) => (
-                  <tr key={o.id}>
-                    <td>
+                  <tr key={o.id} className="hover:bg-zinc-900/25 transition-colors">
+                    <td className="px-5 py-3.5">
                       <Badge variant="blue">#{o.id}</Badge>
                     </td>
-                    <td style={{ fontWeight: 600 }}>{o.customer?.full_name || '—'}</td>
-                    <td style={{ fontWeight: 600 }}>${Number(o.total_amount).toFixed(2)}</td>
-                    <td className="td-muted">
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <Calendar size={13} />
+                    <td className="px-5 py-3.5 text-zinc-300 font-semibold">{o.customer?.full_name || '—'}</td>
+                    <td className="px-5 py-3.5 text-white font-semibold">${Number(o.total_amount).toFixed(2)}</td>
+                    <td className="px-5 py-3.5 text-zinc-400">
+                      <div className="flex items-center gap-1.5 text-zinc-450">
+                        <Calendar size={13} className="text-zinc-550" />
                         <span>{new Date(o.created_at).toLocaleString()}</span>
                       </div>
                     </td>
-                    <td className="td-muted">{o.items?.length || 0} line items</td>
-                    <td style={{ textAlign: 'right' }}>
-                      <div style={{ display: 'inline-flex', gap: 6 }}>
+                    <td className="px-5 py-3.5 text-zinc-450 text-xs font-medium">{o.items?.length || 0} line items</td>
+                    <td className="px-5 py-3.5 text-right whitespace-nowrap">
+                      <div className="inline-flex gap-1.5">
                         <button
-                          className="btn btn-secondary btn-sm btn-icon"
+                          className="p-1.5 border border-zinc-800 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900 rounded-lg transition-all"
                           onClick={() => handleViewDetails(o)}
-                          title="View Details"
                           aria-label={`View order ${o.id} details`}
                         >
-                          <Eye size={14} />
+                          <Eye size={13} />
                         </button>
                         <button
-                          className="btn btn-danger btn-sm btn-icon"
+                          className="p-1.5 border border-zinc-800 text-rose-500/80 hover:text-rose-400 hover:bg-rose-950/20 rounded-lg transition-all"
                           onClick={() => setCancellingOrder(o)}
-                          title="Cancel Order"
                           aria-label={`Cancel order ${o.id}`}
                         >
-                          <Trash2 size={14} />
+                          <Trash2 size={13} />
                         </button>
                       </div>
                     </td>
@@ -261,61 +265,65 @@ export default function Orders() {
       {/* Create Order Modal */}
       {isCreateOpen && (
         <Modal title="Create New Order" onClose={() => setIsCreateOpen(false)} size="modal-lg">
-          <form onSubmit={handleCreateOrder}>
-            <div className="form-group">
-              <label className="form-label">Select Customer</label>
+          <form onSubmit={handleCreateOrder} className="space-y-4">
+            <div className="space-y-1.5">
+              <label className="block text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Select Customer</label>
               <select
-                className="form-input"
+                className="w-full bg-zinc-900/50 border border-zinc-850 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-zinc-700 transition-colors cursor-pointer"
                 value={customerId}
                 onChange={(e) => setCustomerId(e.target.value)}
                 required
               >
-                <option value="">-- Choose Customer --</option>
+                <option value="" className="bg-zinc-950">-- Choose Customer --</option>
                 {customers.map((c) => (
-                  <option key={c.id} value={c.id}>
+                  <option key={c.id} value={c.id} className="bg-zinc-950">
                     {c.full_name} ({c.email})
                   </option>
                 ))}
               </select>
             </div>
 
-            <div style={{ margin: '20px 0 10px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ fontSize: '.9rem', fontWeight: 600, color: 'var(--text-secondary)' }}>Order Line Items</h3>
-              <button type="button" className="btn btn-secondary btn-sm" onClick={handleAddLineItem}>
-                <PlusCircle size={14} /> Add Item Row
+            <div className="flex items-center justify-between border-b border-zinc-900 pb-2 pt-2">
+              <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Order Line Items</h3>
+              <button 
+                type="button" 
+                className="flex items-center gap-1 px-2.5 py-1 border border-zinc-850 text-zinc-350 hover:bg-zinc-900 text-[11px] font-semibold rounded-md transition-colors"
+                onClick={handleAddLineItem}
+              >
+                <PlusCircle size={12} /> Add Item Row
               </button>
             </div>
 
-            {/* Line Items Grid */}
-            <div style={{ maxHeight: 250, overflowY: 'auto', paddingRight: 4, marginBottom: 20 }}>
+            {/* Line Items List */}
+            <div className="max-h-60 overflow-y-auto pr-1 space-y-3.5">
               {lineItems.map((item, index) => {
                 const selectedProd = products.find((p) => p.id === parseInt(item.product_id, 10));
                 const maxStock = selectedProd ? selectedProd.quantity_in_stock : 0;
                 
                 return (
-                  <div key={index} className="order-item-row">
-                    <div className="form-group" style={{ margin: 0 }}>
-                      {index === 0 && <label className="form-label">Product</label>}
+                  <div key={index} className="grid grid-cols-[1fr_80px_auto] gap-3 items-end">
+                    <div className="space-y-1">
+                      {index === 0 && <label className="block text-[10px] font-semibold uppercase tracking-wider text-zinc-500">Product</label>}
                       <select
-                        className="form-input"
+                        className="w-full bg-zinc-900/50 border border-zinc-850 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-zinc-700 transition-colors cursor-pointer"
                         value={item.product_id}
                         onChange={(e) => handleLineItemChange(index, 'product_id', e.target.value)}
                         required
                       >
-                        <option value="">-- Select Product --</option>
+                        <option value="" className="bg-zinc-950">-- Select Product --</option>
                         {products.map((p) => (
-                          <option key={p.id} value={p.id}>
+                          <option key={p.id} value={p.id} className="bg-zinc-950">
                             {p.name} (${Number(p.price).toFixed(2)}) [Stock: {p.quantity_in_stock}]
                           </option>
                         ))}
                       </select>
                     </div>
 
-                    <div className="form-group" style={{ margin: 0, width: 90 }}>
-                      {index === 0 && <label className="form-label">Qty</label>}
+                    <div className="space-y-1">
+                      {index === 0 && <label className="block text-[10px] font-semibold uppercase tracking-wider text-zinc-500">Qty</label>}
                       <input
                         type="number"
-                        className="form-input"
+                        className="w-full bg-zinc-900/50 border border-zinc-850 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-zinc-700 transition-colors"
                         min="1"
                         max={maxStock || undefined}
                         value={item.quantity}
@@ -324,19 +332,18 @@ export default function Orders() {
                       />
                     </div>
 
-                    <div style={{ display: 'flex', alignItems: 'center', height: 38, gap: 10 }}>
-                      <span style={{ fontSize: '.88rem', fontWeight: 600, width: 80, textAlign: 'right' }}>
+                    <div className="flex items-center gap-2 h-9 pl-1">
+                      <span className="text-xs font-semibold text-zinc-200 w-16 text-right select-none">
                         ${selectedProd ? (Number(selectedProd.price) * (parseInt(item.quantity, 10) || 0)).toFixed(2) : '0.00'}
                       </span>
                       <button
                         type="button"
-                        className="btn btn-ghost btn-icon btn-sm"
+                        className="p-1.5 border border-zinc-850 hover:bg-zinc-900 rounded-lg text-rose-500 hover:text-rose-400 transition-colors"
                         onClick={() => handleRemoveLineItem(index)}
                         disabled={lineItems.length === 1}
-                        style={{ color: 'var(--red)' }}
                         aria-label="Remove item"
                       >
-                        <MinusCircle size={16} />
+                        <MinusCircle size={14} />
                       </button>
                     </div>
                   </div>
@@ -344,16 +351,25 @@ export default function Orders() {
               })}
             </div>
 
-            <div className="total-row">
+            <div className="flex justify-end items-center gap-4 py-3.5 border-t border-zinc-900 text-sm font-semibold text-white">
               <span>Grand Total:</span>
-              <span>${calculateTotal().toFixed(2)}</span>
+              <span className="text-base font-bold">${calculateTotal().toFixed(2)}</span>
             </div>
 
-            <div className="form-actions">
-              <button type="button" className="btn btn-secondary" onClick={() => setIsCreateOpen(false)} disabled={actionLoading}>
+            <div className="flex justify-end gap-2.5 pt-4 border-t border-zinc-850 mt-5">
+              <button 
+                type="button" 
+                className="px-3.5 py-1.5 border border-zinc-800 text-zinc-350 hover:bg-zinc-900 hover:text-white text-xs font-medium rounded-lg transition-colors" 
+                onClick={() => setIsCreateOpen(false)} 
+                disabled={actionLoading}
+              >
                 Cancel
               </button>
-              <button type="submit" className="btn btn-primary" disabled={actionLoading}>
+              <button 
+                type="submit" 
+                className="px-3.5 py-1.5 bg-zinc-100 text-zinc-950 hover:bg-zinc-200 text-xs font-semibold rounded-lg transition-colors" 
+                disabled={actionLoading}
+              >
                 {actionLoading ? 'Placing Order...' : 'Place Order'}
               </button>
             </div>
@@ -367,47 +383,47 @@ export default function Orders() {
           {selectedOrderLoading ? (
             <Spinner />
           ) : (
-            <div>
-              <div className="order-meta">
-                <div className="order-meta-item">
-                  <label>Customer Name</label>
-                  <p>{selectedOrder.customer?.full_name}</p>
+            <div className="space-y-6">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-zinc-900/35 border border-zinc-900/80 p-3.5 rounded-xl">
+                  <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block">Customer Name</label>
+                  <p className="text-xs font-semibold text-zinc-200 mt-1">{selectedOrder.customer?.full_name}</p>
                 </div>
-                <div className="order-meta-item">
-                  <label>Email Address</label>
-                  <p>{selectedOrder.customer?.email}</p>
+                <div className="bg-zinc-900/35 border border-zinc-900/80 p-3.5 rounded-xl">
+                  <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block">Email Address</label>
+                  <p className="text-xs font-semibold text-zinc-200 mt-1">{selectedOrder.customer?.email}</p>
                 </div>
-                <div className="order-meta-item">
-                  <label>Order Date</label>
-                  <p>{new Date(selectedOrder.created_at).toLocaleString()}</p>
+                <div className="bg-zinc-900/35 border border-zinc-900/80 p-3.5 rounded-xl">
+                  <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block">Order Date</label>
+                  <p className="text-xs font-semibold text-zinc-200 mt-1">{new Date(selectedOrder.created_at).toLocaleString()}</p>
                 </div>
-                <div className="order-meta-item">
-                  <label>Contact Phone</label>
-                  <p>{selectedOrder.customer?.phone_number || '—'}</p>
+                <div className="bg-zinc-900/35 border border-zinc-900/80 p-3.5 rounded-xl">
+                  <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block">Contact Phone</label>
+                  <p className="text-xs font-semibold text-zinc-200 mt-1">{selectedOrder.customer?.phone_number || '—'}</p>
                 </div>
               </div>
 
-              <div style={{ marginTop: 24, marginBottom: 16 }}>
-                <h3 style={{ fontSize: '.95rem', fontWeight: 600, marginBottom: 12 }}>Items in this Order</h3>
-                <div className="table-wrap">
-                  <table>
+              <div>
+                <h3 className="text-xs font-semibold text-zinc-450 uppercase tracking-wider mb-2.5">Items in this Order</h3>
+                <div className="overflow-x-auto border border-zinc-900 rounded-xl">
+                  <table className="w-full text-[13px] border-collapse">
                     <thead>
-                      <tr>
-                        <th>Product SKU</th>
-                        <th>Product Name</th>
-                        <th>Quantity Ordered</th>
-                        <th>Unit Price</th>
-                        <th style={{ textAlign: 'right' }}>Subtotal</th>
+                      <tr className="bg-zinc-950/40 border-b border-zinc-900">
+                        <th className="text-[11px] font-semibold text-zinc-400 tracking-wider text-left uppercase px-5 py-2">Product SKU</th>
+                        <th className="text-[11px] font-semibold text-zinc-400 tracking-wider text-left uppercase px-5 py-2">Product Name</th>
+                        <th className="text-[11px] font-semibold text-zinc-400 tracking-wider text-left uppercase px-5 py-2">Quantity</th>
+                        <th className="text-[11px] font-semibold text-zinc-400 tracking-wider text-left uppercase px-5 py-2">Unit Price</th>
+                        <th className="text-[11px] font-semibold text-zinc-400 tracking-wider text-right uppercase px-5 py-2">Subtotal</th>
                       </tr>
                     </thead>
-                    <tbody>
+                    <tbody className="divide-y divide-zinc-900/60">
                       {selectedOrder.items?.map((item) => (
-                        <tr key={item.id}>
-                          <td className="td-muted">{item.product?.sku || '—'}</td>
-                          <td style={{ fontWeight: 500 }}>{item.product?.name || '—'}</td>
-                          <td>{item.quantity}</td>
-                          <td>${Number(item.unit_price).toFixed(2)}</td>
-                          <td style={{ fontWeight: 600, textAlign: 'right' }}>
+                        <tr key={item.id} className="hover:bg-zinc-900/25 transition-colors">
+                          <td className="px-5 py-3 text-zinc-500 font-mono text-xs">{item.product?.sku || '—'}</td>
+                          <td className="px-5 py-3 text-zinc-300 font-semibold">{item.product?.name || '—'}</td>
+                          <td className="px-5 py-3 text-zinc-350">{item.quantity}</td>
+                          <td className="px-5 py-3 text-zinc-350">${Number(item.unit_price).toFixed(2)}</td>
+                          <td className="px-5 py-3 text-right text-white font-semibold">
                             ${(Number(item.unit_price) * item.quantity).toFixed(2)}
                           </td>
                         </tr>
@@ -417,20 +433,24 @@ export default function Orders() {
                 </div>
               </div>
 
-              <div className="total-row">
+              <div className="flex justify-end items-center gap-4 py-3.5 border-t border-zinc-900 text-sm font-semibold text-white">
                 <span>Total Amount Charged:</span>
-                <span>${Number(selectedOrder.total_amount).toFixed(2)}</span>
+                <span className="text-base font-bold">${Number(selectedOrder.total_amount).toFixed(2)}</span>
               </div>
 
-              <div className="form-actions" style={{ justifyContent: 'space-between' }}>
+              <div className="flex justify-between items-center pt-4 border-t border-zinc-850 mt-5">
                 <button
                   type="button"
-                  className="btn btn-danger"
+                  className="px-3.5 py-1.5 bg-red-950/40 border border-red-900/30 text-xs font-semibold text-red-400 hover:bg-red-900/40 hover:text-red-300 rounded-lg transition-colors"
                   onClick={() => setCancellingOrder(selectedOrder)}
                 >
                   Cancel Order
                 </button>
-                <button type="button" className="btn btn-secondary" onClick={() => setIsDetailsOpen(false)}>
+                <button 
+                  type="button" 
+                  className="px-3.5 py-1.5 border border-zinc-800 text-zinc-350 hover:bg-zinc-900 hover:text-white text-xs font-medium rounded-lg transition-colors" 
+                  onClick={() => setIsDetailsOpen(false)}
+                >
                   Close
                 </button>
               </div>

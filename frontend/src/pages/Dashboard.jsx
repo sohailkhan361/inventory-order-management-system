@@ -34,80 +34,77 @@ export default function Dashboard() {
   if (loading) return <Spinner />;
 
   return (
-    <div>
-      <div className="page-header">
-        <div>
-          <h1>Dashboard</h1>
-          <p>Welcome back — here's what's happening today.</p>
-        </div>
+    <div className="space-y-8">
+      {/* Page Header */}
+      <div>
+        <h2 className="text-xl font-bold tracking-tight text-white">Dashboard</h2>
+        <p className="text-xs text-zinc-400 mt-1">Real-time stats and alerts for your inventory items.</p>
       </div>
 
-      {/* Stat cards */}
-      <div className="stats-grid">
+      {/* Grid Stats */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           label="Total Products"
           value={stats?.products}
-          icon={<Package size={20} />}
-          accentColor="var(--accent)"
-          accentDim="var(--accent-dim)"
+          icon={<Package size={16} />}
+          accentColor="#3b82f6"
         />
         <StatCard
           label="Total Customers"
           value={stats?.customers}
-          icon={<Users size={20} />}
-          accentColor="var(--green)"
-          accentDim="var(--green-dim)"
+          icon={<Users size={16} />}
+          accentColor="#10b981"
         />
         <StatCard
           label="Total Orders"
           value={stats?.orders}
-          icon={<ShoppingCart size={20} />}
-          accentColor="var(--purple)"
-          accentDim="var(--purple-dim)"
+          icon={<ShoppingCart size={16} />}
+          accentColor="#8b5cf6"
         />
         <StatCard
           label="Low Stock Items"
           value={lowStock.length}
-          icon={<AlertTriangle size={20} />}
-          accentColor="var(--yellow)"
-          accentDim="var(--yellow-dim)"
+          icon={<AlertTriangle size={16} />}
+          accentColor="#f59e0b"
         />
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
-        {/* Recent Orders */}
-        <div className="card">
-          <div className="card-header">
-            <h2>Recent Orders</h2>
-            <Link to="/orders" className="btn btn-ghost btn-sm">
-              View all <ArrowRight size={14} />
+      {/* Details Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Recent Orders Card */}
+        <div className="bg-[#09090b] border border-zinc-900 rounded-xl overflow-hidden flex flex-col">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-zinc-900 bg-zinc-950/20">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-400">Recent Orders</h3>
+            <Link to="/orders" className="text-xs text-zinc-400 hover:text-zinc-200 transition-colors inline-flex items-center gap-1.5 font-medium">
+              View all <ArrowRight size={12} />
             </Link>
           </div>
+          
           {orders.length === 0 ? (
-            <div className="empty-state" style={{ padding: 32 }}>
-              <TrendingUp size={32} />
-              <p>No orders yet</p>
+            <div className="flex flex-col items-center justify-center py-14 text-zinc-650">
+              <TrendingUp size={28} className="opacity-40 mb-2" />
+              <p className="text-xs">No orders placed yet</p>
             </div>
           ) : (
-            <div className="table-wrap">
-              <table>
+            <div className="overflow-x-auto">
+              <table className="w-full text-[13px] border-collapse">
                 <thead>
-                  <tr>
-                    <th>Order #</th>
-                    <th>Customer</th>
-                    <th>Total</th>
-                    <th>Date</th>
+                  <tr className="bg-zinc-950/40 border-b border-zinc-900">
+                    <th className="text-[11px] font-semibold text-zinc-400 tracking-wider text-left uppercase px-5 py-2.5">Order #</th>
+                    <th className="text-[11px] font-semibold text-zinc-400 tracking-wider text-left uppercase px-5 py-2.5">Customer</th>
+                    <th className="text-[11px] font-semibold text-zinc-400 tracking-wider text-left uppercase px-5 py-2.5">Total</th>
+                    <th className="text-[11px] font-semibold text-zinc-400 tracking-wider text-left uppercase px-5 py-2.5">Date</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-zinc-900/60">
                   {orders.map((o) => (
-                    <tr key={o.id}>
-                      <td>
+                    <tr key={o.id} className="hover:bg-zinc-900/25 transition-colors">
+                      <td className="px-5 py-3.5">
                         <Badge variant="blue">#{o.id}</Badge>
                       </td>
-                      <td className="td-muted">{o.customer?.full_name || '—'}</td>
-                      <td style={{ fontWeight: 600 }}>${Number(o.total_amount).toFixed(2)}</td>
-                      <td className="td-muted">
+                      <td className="px-5 py-3.5 text-zinc-300 font-medium">{o.customer?.full_name || '—'}</td>
+                      <td className="px-5 py-3.5 text-white font-semibold">${Number(o.total_amount).toFixed(2)}</td>
+                      <td className="px-5 py-3.5 text-zinc-550 text-xs">
                         {new Date(o.created_at).toLocaleDateString()}
                       </td>
                     </tr>
@@ -118,37 +115,38 @@ export default function Dashboard() {
           )}
         </div>
 
-        {/* Low Stock */}
-        <div className="card">
-          <div className="card-header">
-            <h2>⚠ Low Stock Alert</h2>
-            <Link to="/products" className="btn btn-ghost btn-sm">
-              View all <ArrowRight size={14} />
+        {/* Low Stock Alerts Card */}
+        <div className="bg-[#09090b] border border-zinc-900 rounded-xl overflow-hidden flex flex-col">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-zinc-900 bg-zinc-950/20">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-400">⚠️ Low Stock Alerts</h3>
+            <Link to="/products" className="text-xs text-zinc-400 hover:text-zinc-200 transition-colors inline-flex items-center gap-1.5 font-medium">
+              View catalog <ArrowRight size={12} />
             </Link>
           </div>
+
           {lowStock.length === 0 ? (
-            <div className="empty-state" style={{ padding: 32 }}>
-              <Package size={32} />
-              <p>All products are well stocked</p>
+            <div className="flex flex-col items-center justify-center py-14 text-zinc-650">
+              <Package size={28} className="opacity-40 mb-2" />
+              <p className="text-xs">All items are well stocked</p>
             </div>
           ) : (
-            <div className="table-wrap">
-              <table>
+            <div className="overflow-x-auto">
+              <table className="w-full text-[13px] border-collapse">
                 <thead>
-                  <tr>
-                    <th>Product</th>
-                    <th>SKU</th>
-                    <th>Stock</th>
+                  <tr className="bg-zinc-950/40 border-b border-zinc-900">
+                    <th className="text-[11px] font-semibold text-zinc-400 tracking-wider text-left uppercase px-5 py-2.5">Product</th>
+                    <th className="text-[11px] font-semibold text-zinc-400 tracking-wider text-left uppercase px-5 py-2.5">SKU</th>
+                    <th className="text-[11px] font-semibold text-zinc-400 tracking-wider text-left uppercase px-5 py-2.5">Stock</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-zinc-900/60">
                   {lowStock.map((p) => (
-                    <tr key={p.id} className="low-stock-row">
-                      <td>{p.name}</td>
-                      <td className="td-muted">{p.sku}</td>
-                      <td>
+                    <tr key={p.id} className="hover:bg-zinc-900/25 transition-colors">
+                      <td className="px-5 py-3.5 text-zinc-300 font-semibold">{p.name}</td>
+                      <td className="px-5 py-3.5 text-zinc-550 font-mono text-xs">{p.sku}</td>
+                      <td className="px-5 py-3.5">
                         <Badge variant={p.quantity_in_stock === 0 ? 'red' : 'yellow'}>
-                          {p.quantity_in_stock}
+                          {p.quantity_in_stock} remaining
                         </Badge>
                       </td>
                     </tr>
