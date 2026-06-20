@@ -1,73 +1,94 @@
-# FastAPI Backend — Inventory & Order Management System
+# Backend
 
-This directory houses the REST API backend service, built using FastAPI, PostgreSQL, SQLAlchemy ORM, and Alembic migrations.
+FastAPI REST API backed by PostgreSQL and synchronous SQLAlchemy sessions.
 
----
+## Requirements
 
-## 🐍 Tech Stack
+- Python 3.10+
+- PostgreSQL 14+
+- A database and user represented by `DATABASE_URL`
 
-- **Framework**: [FastAPI](https://fastapi.tiangolo.com/) (high performance, asynchronous support, auto-generated OpenAPI documentation)
-- **Database Engine**: [PostgreSQL](https://www.postgresql.org/) (relational database with strong ACID compliance)
-- **ORM**: [SQLAlchemy 2.0](https://www.sqlalchemy.org/) (declarative object-relational mapper)
-- **Migrations**: [Alembic](https://alembic.sqlalchemy.org/) (lightweight database schema migration tool)
-- **Validation**: [Pydantic v2](https://docs.pydantic.dev/) (data parsing and validation schemas)
+## Configure and run
 
----
+From `backend/`:
 
-## 🏛️ Code Structure
-
-```
-backend/
-├── alembic.ini             # Alembic migration configurations
-├── alembic/                # Migration scripts & env controls
-├── app/
-│   ├── main.py             # FastAPI entrypoint, CORS configurations, error handlers
-│   ├── database/
-│   │   └── session.py      # SQLAlchemy connection pool engines & DB dependencies
-│   ├── models/             # SQLAlchemy ORM model declarations
-│   ├── schemas/            # Pydantic schema validation structures
-│   ├── services/           # Services implementing critical transaction business rules
-│   └── routers/            # Routing endpoints mapping HTTP requests to services
-└── requirements.txt        # PIP dependencies manifest
-```
-
----
-
-## 🚀 Quickstart Guide
-
-For step-by-step database creation and detailed configurations, refer to the [🚀 General Setup Guide](file:///Users/sohailkhan/Documents/POC/inventory-order-management-system/docs/installation.md). Below is a quick setup summary:
-
-### 1. Setup Virtual Environment
 ```bash
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
+cp .env.example .env
 ```
 
-### 2. Configure Environment Variables
-Create a `.env` file in the `backend/` directory:
+Edit `.env`:
+
 ```env
 DATABASE_URL=postgresql://postgres:postgres@localhost:5432/inventory_db
 ```
 
-### 3. Generate & Apply Migrations
+Start PostgreSQL, then launch the API:
+
 ```bash
-alembic revision --autogenerate -m "initial_schema"
+uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+```
+
+On startup, the application imports all models and creates missing tables. Successful startup includes `Database tables are ready` and `Application startup complete` in the log.
+
+Verify it:
+
+```bash
+curl http://127.0.0.1:8000/health
+# {"status":"ok","version":"1.0.0"}
+```
+
+Useful URLs:
+
+- API root: http://127.0.0.1:8000/
+- Swagger UI: http://127.0.0.1:8000/docs
+- ReDoc: http://127.0.0.1:8000/redoc
+- API prefix: `http://127.0.0.1:8000/api/v1`
+
+## Database schema management
+
+Alembic is wired to the models and reads `DATABASE_URL`, but `alembic/versions/` has no committed revisions. For the current repository, application startup creates the initial tables. Before using migrations as the deployment source of truth, create and review an initial revision:
+
+```bash
+alembic revision --autogenerate -m "initial schema"
 alembic upgrade head
 ```
 
-### 4. Run Development Server
-```bash
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+Commit the generated revision. Do not generate a fresh “initial” migration independently in each environment.
+
+## Structure
+
+```text
+app/main.py              application, middleware, handlers, health route
+app/database/session.py  engine, session factory, database dependency
+app/models/              SQLAlchemy tables and relationships
+app/schemas/             Pydantic request/response models
+app/services/            transactions and business rules
+app/routers/             HTTP routes under /api/v1
+alembic/                 migration environment (no revisions yet)
 ```
-- **API Swagger UI**: [http://localhost:8000/docs](http://localhost:8000/docs)
-- **Health Check**: [http://localhost:8000/health](http://localhost:8000/health)
 
----
+## API overview
 
-## 🔌 API Summary
-- **Products**: GET `/products/`, POST `/products/`, PUT `/products/{id}`, DELETE `/products/{id}`
-- **Customers**: GET `/customers/`, POST `/customers/`, DELETE `/customers/{id}`
-- **Orders**: GET `/orders/`, POST `/orders/`, GET `/orders/{id}`, DELETE `/orders/{id}`
+- Products: list, fetch, create, fully update, delete
+- Customers: list, fetch, create, delete
+- Orders: list, fetch, place, cancel (restores inventory)
 
-For complete descriptions of request payloads, URL parameters, and status codes, see [🔌 Detailed API Docs](file:///Users/sohailkhan/Documents/POC/inventory-order-management-system/docs/api.md).
+See [the API reference](../docs/api.md) for payloads and response fields.
+
+## Checks
+
+```bash
+venv/bin/python -m compileall -q app
+```
+
+There is currently no backend automated test suite.
+
+## Production notes
+
+- Replace `allow_origins=["*"]` with trusted frontend origins.
+- Use a dedicated database role and do not commit `.env`.
+- Add committed Alembic revisions and run `alembic upgrade head` during deployment.
+- Configure process management, HTTPS, secrets, logging, and database backups outside this development server.

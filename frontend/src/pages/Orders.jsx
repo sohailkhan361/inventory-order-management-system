@@ -235,7 +235,7 @@ export default function Orders() {
                         <span>{new Date(o.created_at).toLocaleString()}</span>
                       </div>
                     </td>
-                    <td className="px-5 py-3.5 text-zinc-450 text-xs font-medium">{o.items?.length || 0} line items</td>
+                    <td className="px-5 py-3.5 text-zinc-450 text-xs font-medium">{o.order_items?.length || 0} line items</td>
                     <td className="px-5 py-3.5 text-right whitespace-nowrap">
                       <div className="inline-flex gap-1.5">
                         <button
@@ -417,7 +417,7 @@ export default function Orders() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-zinc-900/60">
-                      {selectedOrder.items?.map((item) => (
+                      {selectedOrder.order_items?.map((item) => (
                         <tr key={item.id} className="hover:bg-zinc-900/25 transition-colors">
                           <td className="px-5 py-3 text-zinc-500 font-mono text-xs">{item.product?.sku || '—'}</td>
                           <td className="px-5 py-3 text-zinc-300 font-semibold">{item.product?.name || '—'}</td>

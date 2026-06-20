@@ -32,7 +32,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="Inventory & Order Management System",
     description=(
-        "A production-ready REST API for managing products, customers, and orders. "
+        "A REST API for managing products, customers, and orders. "
         "Stock levels are automatically adjusted when orders are placed or cancelled."
     ),
     version="1.0.0",

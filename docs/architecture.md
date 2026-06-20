@@ -1,6 +1,6 @@
 # Architecture & Tech Stack Choices
 
-This document details the architectural patterns, database schemas, framework choices, and technical trade-offs of the Inventory & Order Management System.
+This document describes the implemented architecture, schema, and important operational trade-offs.
 
 ---
 
@@ -13,7 +13,7 @@ graph TD
     Client[Web Client] --> Routers[1. Routers / Controllers]
     Routers --> Services[2. Services / Business Logic]
     Services --> Models[3. SQLAlchemy ORM Models]
-    Services --> Schemas[4. Pydantic Validation Schemas]
+    Routers --> Schemas[4. Pydantic Validation Schemas]
     Models --> DB[(5. PostgreSQL Database)]
 ```
 
@@ -21,7 +21,9 @@ graph TD
 2. **Services (`backend/app/services/`)**: Implement business logic, validate complex cross-entity conditions, manage database transactions, and execute row-level locking.
 3. **Models (`backend/app/models/`)**: Define the database tables, data types, constraints, and relationships.
 4. **Schemas (`backend/app/schemas/`)**: Define structure-enforcement models (Pydantic) for parsing and validating requests and response payloads.
-5. **Database Session (`backend/app/database/`)**: Manages SQLAlchemy DB connections and session lifecycles.
+5. **Database Session (`backend/app/database/`)**: Manages the synchronous SQLAlchemy engine, connection pool, and request-scoped sessions.
+
+The FastAPI route functions are synchronous (`def`), as are the SQLAlchemy sessions and PostgreSQL driver calls. FastAPI runs these handlers in its thread pool; this backend is not currently using SQLAlchemy's async engine.
 
 ---
 
@@ -79,7 +81,7 @@ erDiagram
 - **Selection**: **PostgreSQL** (Relational).
 - **Pros**:
   - Full ACID transaction guarantees are critical for managing financial invoices and catalog quantities.
-  - Strict constraints (foreign keys, email check constraints) ensure database integrity.
+- Strict constraints (foreign keys, unique indexes, and numeric checks) ensure database integrity. Email format is validated by Pydantic rather than a database check constraint.
   - Supports row-level pessimistic locking (`SELECT FOR UPDATE`), preventing double-allocating stock.
 - **Trade-offs**: NoSQL databases like MongoDB scale horizontally and accommodate unstructured schema changes easier, but inventory calculations require transactional consistency across multiple tables.
 
@@ -105,10 +107,23 @@ erDiagram
 When an order is created, the system must confirm that each item is in stock and subtract the quantity *atomically* to avoid overselling. 
 
 To achieve this under concurrent load:
-1. The backend launches a PostgreSQL transaction (`db.begin()`).
+1. A request-scoped SQLAlchemy session begins a transaction implicitly on its first database operation.
 2. Inside `backend/app/services/order_service.py`, product records are fetched using `with_for_update()`:
    ```python
    product = db.query(Product).filter(Product.id == item.product_id).with_for_update().first()
    ```
 3. PostgreSQL locks these specific rows. Any concurrent connection trying to checkout the same products will wait until this transaction either completes (`COMMIT`) or fails (`ROLLBACK`).
 4. Stock quantities are decremented, and the transaction commits. This guarantees that double-booking stock is mathematically impossible.
+
+Order cancellation also locks product rows before restoring inventory.
+
+## Schema lifecycle
+
+`app/main.py` calls `Base.metadata.create_all()` during application startup. This creates missing tables but does not evolve existing columns or constraints. Alembic configuration is present, but no revision is committed. Production deployments should use reviewed, committed Alembic revisions as the schema source of truth and eventually remove startup-driven schema creation.
+
+## Runtime and deployment boundaries
+
+- The frontend is a browser SPA and calls a configurable `/api/v1` base URL with Axios.
+- The backend has no authentication or authorization layer.
+- CORS currently allows all origins and should be restricted for deployment.
+- The repository has no automated tests, container definitions, CI workflow, or production server/process configuration.

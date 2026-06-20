@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 from decimal import Decimal
+from app.schemas.product import ProductResponse
 
 
 class OrderItemBase(BaseModel):
@@ -16,5 +17,6 @@ class OrderItemResponse(OrderItemBase):
     order_id: int
     unit_price: Decimal
     subtotal: Decimal
+    product: ProductResponse | None = None
 
     model_config = {"from_attributes": True}

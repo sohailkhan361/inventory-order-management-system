@@ -1,53 +1,69 @@
 # Inventory & Order Management System
 
-A high-performance full-stack web application for real-time inventory tracking, customer accounts registration, and client order checkouts. This repository contains a production-ready **FastAPI Backend** and a premium, dark-mode **Vite React Frontend** styled with Tailwind CSS v4.0.
+A full-stack inventory dashboard with a FastAPI/PostgreSQL API and a React/Vite client. It manages products, customers, and orders; order placement snapshots prices and adjusts stock in the same database transaction.
 
----
+## Repository layout
 
-## 📖 Documentation Index
-
-For deep-dive setup guides, architectural decisions, and API blueprints, refer to:
-
-- [🚀 Installation Guide](file:///Users/sohailkhan/Documents/POC/inventory-order-management-system/docs/installation.md) — Step-by-step setup checklist for backend services, PostgreSQL database schema, and frontend packages.
-- [🏛️ Architecture & Tech Stack Choices](file:///Users/sohailkhan/Documents/POC/inventory-order-management-system/docs/architecture.md) — Database design (Mermaid ER diagram), layered service architecture, locking models, and stack trade-offs.
-- [🔌 API Specification](file:///Users/sohailkhan/Documents/POC/inventory-order-management-system/docs/api.md) — Blueprints for Products, Customers, and Orders REST resources, parameters, and payload schemas.
-
-Or navigate straight to sub-project READMEs:
-- [🐍 Backend Layer README](file:///Users/sohailkhan/Documents/POC/inventory-order-management-system/backend/README.md)
-- [⚡ Frontend Layer README](file:///Users/sohailkhan/Documents/POC/inventory-order-management-system/frontend/README.md)
-
----
-
-## 🛠️ Repository Directory Mapping
-
-```
-inventory-order-management-system/
-├── backend/                  # FastAPI + SQLAlchemy Backend service
-│   ├── app/                  # Application code (routers, services, models, schemas)
-│   ├── alembic/              # Database migration logs & scripts
-│   └── requirements.txt      # Python dependencies manifest
-├── frontend/                 # Vite + React + Tailwind v4.0 SPA Frontend
-│   ├── src/
-│   │   ├── components/       # Shared modal dialogs & UI primitives
-│   │   ├── layouts/          # Responsive App shell Layouts
-│   │   ├── pages/            # View Pages (Dashboard, Products, Customers, Orders)
-│   │   └── services/         # Axios api request wrappers
-│   └── package.json          # Node package requirements
-└── docs/                     # Deep-dive system documentation markdown sheets
+```text
+backend/   FastAPI, SQLAlchemy, PostgreSQL, and Alembic configuration
+frontend/  React 19, Vite 8, Tailwind CSS 4 dashboard
+docs/      Installation, architecture, and API reference
 ```
 
----
+## Quick start
 
-## ⚡ Key Highlights
+Prerequisites:
 
-### Layered Database CRUD
-The backend is structured into Routers (controllers), Services (business rules), Models (SQLAlchemy entities), and Schemas (Pydantic payload models), ensuring clean concerns isolation.
+- Python 3.10 or newer
+- Node.js 20.19+ or 22.12+
+- PostgreSQL 14+ (the project was verified with PostgreSQL 14)
 
-### Stock Availability Safeguards
-Uses database row-level locking (`SELECT FOR UPDATE`) on product records when checkout orders are compiled, eliminating inventory overselling or double-booking race conditions during concurrent checkouts.
+Create a PostgreSQL database, then run the backend:
 
-### Snapshot Product Prices
-Saves the unit price of items *at the exact moment* of order checkout inside the `OrderItem` table, protecting historical invoice records from future inventory price updates.
+```bash
+cd backend
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env
+# Edit DATABASE_URL in .env.
+uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+```
 
-### Tailwind CSS v4.0 UI Redesign
-A sleek, high-contrast dark dashboard inspired by Linear and Stripe, incorporating responsive navigation panels, backdrop-blurred modal overlays, and real-time form validation.
+In a second terminal, run the frontend:
+
+```bash
+cd frontend
+npm ci
+cp .env.example .env
+npm run dev -- --host 127.0.0.1
+```
+
+Open http://127.0.0.1:5173. The API health check is at http://127.0.0.1:8000/health and Swagger UI is at http://127.0.0.1:8000/docs.
+
+## Documentation
+
+- [Installation and troubleshooting](docs/installation.md)
+- [Backend guide](backend/README.md)
+- [Frontend guide](frontend/README.md)
+- [API reference](docs/api.md)
+- [Architecture](docs/architecture.md)
+
+## Verified commands
+
+The following were run successfully on 2026-06-20:
+
+```bash
+cd frontend && npm run lint
+cd frontend && npm run build
+cd backend && venv/bin/python -m compileall -q app
+```
+
+Both development servers were started, and live requests to `/health`, `/api/v1/products/`, `/api/v1/customers/`, `/api/v1/orders/`, and the Vite root page succeeded against PostgreSQL.
+
+## Current limitations
+
+- There is no automated test suite yet.
+- Authentication and authorization are not implemented.
+- CORS allows every origin for local development; restrict it before production deployment.
+- Alembic is configured, but no migration revision is committed. The API currently creates missing tables at startup with `Base.metadata.create_all()`.

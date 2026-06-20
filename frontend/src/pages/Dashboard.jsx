@@ -17,7 +17,6 @@ export default function Dashboard() {
       orderService.getAll({ limit: 5 }),
     ]).then(([pRes, cRes, oRes]) => {
       const products  = pRes.data.items  || [];
-      const customers = cRes.data.items  || [];
       const orders    = oRes.data.items  || [];
 
       setStats({

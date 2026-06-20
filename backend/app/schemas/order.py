@@ -17,7 +17,7 @@ class OrderResponse(BaseModel):
     total_amount: Decimal
     created_at: datetime
     customer: CustomerResponse | None = None
-    order_items: list[OrderItemResponse] = []
+    order_items: list[OrderItemResponse] = Field(default_factory=list)
 
     model_config = {"from_attributes": True}
 
