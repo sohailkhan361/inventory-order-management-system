@@ -28,6 +28,7 @@ DATABASE_URL=postgresql://postgres:postgres@localhost:5432/inventory_db
 Start PostgreSQL, then launch the API:
 
 ```bash
+source venv/bin/activate
 uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
