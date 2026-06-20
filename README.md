@@ -43,24 +43,55 @@ Open http://127.0.0.1:5173. The API health check is at http://127.0.0.1:8000/hea
 
 ## Documentation
 
-- [Installation and troubleshooting](docs/installation.md)
-- [Backend guide](backend/README.md)
-- [Frontend guide](frontend/README.md)
-- [API reference](docs/api.md)
-- [Architecture](docs/architecture.md)
-- [Docker and Render/Vercel deployment](docs/deployment.md)
+- **Getting Started**
+  - [Installation and troubleshooting](docs/installation.md)
+  - [Architecture & design decisions](docs/architecture.md)
+  - [API reference](docs/api.md)
 
-## Containers and hosting
+- **Backend & Frontend**
+  - [Backend guide](backend/README.md)
+  - [Frontend guide](frontend/README.md)
 
-Each application has its own Docker build:
+- **Containerization & Deployment** (Choose your path)
+  - 🚀 **First time with Docker?** → [Docker Quick Start](docs/docker-quick-start.md) (recommended)
+  - 📦 **Docker setup guide** → [Docker & Deployment Guide](docs/deployment.md)
+  - 🔧 **Environment variables reference** → [Environment Variables](docs/environment-variables.md)
 
+## Containers and free-tier hosting
+
+The backend and frontend are independent deployable applications that can be containerized and deployed to cloud platforms at no cost:
+
+```
+┌─────────────────────────────────┐
+│ Vercel (Free)                   │
+│ React + Vite Frontend           │
+│ https://your-app.vercel.app     │
+└─────────────────────────────────┘
+              ↓ API calls
+┌─────────────────────────────────┐
+│ Render (Free)                   │
+│ FastAPI Backend                 │
+│ https://your-api.onrender.com   │
+│ + PostgreSQL Database           │
+└─────────────────────────────────┘
+```
+
+**Backend Docker build** (Render-ready):
 ```bash
 docker build -t inventory-order-backend ./backend
+```
+
+**Frontend Docker build** (local testing, Vercel builds natively):
+```bash
 docker build --build-arg VITE_API_URL=http://127.0.0.1:8000/api/v1 \
   -t inventory-order-frontend ./frontend
 ```
 
-For the intended hosted setup, Render builds the backend container using `render.yaml`, while Vercel builds the Vite frontend natively from the `frontend/` directory. See the [deployment guide](docs/deployment.md) for the beginner-friendly sequence and environment variables.
+### Ready to Deploy?
+
+1. **New to Docker?** → Start with [Docker Quick Start](docs/docker-quick-start.md)
+2. **Want details?** → Read [Docker & Deployment Guide](docs/deployment.md)
+3. **Need help with environment setup?** → See [Environment Variables Reference](docs/environment-variables.md)
 
 ## Verified commands
 
