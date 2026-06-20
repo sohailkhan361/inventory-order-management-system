@@ -48,6 +48,19 @@ Open http://127.0.0.1:5173. The API health check is at http://127.0.0.1:8000/hea
 - [Frontend guide](frontend/README.md)
 - [API reference](docs/api.md)
 - [Architecture](docs/architecture.md)
+- [Docker and Render/Vercel deployment](docs/deployment.md)
+
+## Containers and hosting
+
+Each application has its own Docker build:
+
+```bash
+docker build -t inventory-order-backend ./backend
+docker build --build-arg VITE_API_URL=http://127.0.0.1:8000/api/v1 \
+  -t inventory-order-frontend ./frontend
+```
+
+For the intended hosted setup, Render builds the backend container using `render.yaml`, while Vercel builds the Vite frontend natively from the `frontend/` directory. See the [deployment guide](docs/deployment.md) for the beginner-friendly sequence and environment variables.
 
 ## Verified commands
 

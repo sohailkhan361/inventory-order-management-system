@@ -98,6 +98,8 @@ npm run lint
 npm run build
 ```
 
+For container builds and separate Render/Vercel deployment, continue with [the deployment guide](deployment.md).
+
 ## Troubleshooting
 
 ### PostgreSQL connection errors

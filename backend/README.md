@@ -87,9 +87,23 @@ venv/bin/python -m compileall -q app
 
 There is currently no backend automated test suite.
 
+## Docker
+
+From the repository root:
+
+```bash
+docker build -t inventory-order-backend ./backend
+docker run --rm -p 8000:8000 \
+  -e DATABASE_URL=postgresql://USER:PASSWORD@DATABASE_HOST:5432/inventory_db \
+  -e CORS_ORIGINS=http://127.0.0.1:5173 \
+  inventory-order-backend
+```
+
+The image runs as a non-root user, honors the platform-provided `PORT`, and includes a `/health` container check that also verifies database connectivity. See [the deployment guide](../docs/deployment.md) for Render.
+
 ## Production notes
 
-- Replace `allow_origins=["*"]` with trusted frontend origins.
+- Set `CORS_ORIGINS` to the comma-separated trusted frontend origins.
 - Use a dedicated database role and do not commit `.env`.
 - Add committed Alembic revisions and run `alembic upgrade head` during deployment.
 - Configure process management, HTTPS, secrets, logging, and database backups outside this development server.

@@ -1,12 +1,15 @@
 import logging
+import os
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Request, status
+from fastapi import Depends, FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import Session
 
-from app.database.session import engine, Base
+from app.database.session import engine, Base, get_db
 from app.routers import products, customers, orders
 
 # Configure logging
@@ -41,13 +44,23 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+
+def configured_cors_origins() -> list[str]:
+    """Read a comma-separated origin allowlist from the environment."""
+    value = os.getenv("CORS_ORIGINS", "*")
+    origins = [origin.strip().rstrip("/") for origin in value.split(",") if origin.strip()]
+    return origins or ["*"]
+
+
+cors_origins = configured_cors_origins()
+
 # ---------------------------------------------------------------------------
 # CORS Middleware
 # ---------------------------------------------------------------------------
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],   # Tighten this in production
-    allow_credentials=True,
+    allow_origins=cors_origins,
+    allow_credentials="*" not in cors_origins,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -86,7 +99,8 @@ app.include_router(orders.router, prefix="/api/v1")
 # Health check
 # ---------------------------------------------------------------------------
 @app.get("/health", tags=["Health"], summary="Health check")
-def health_check():
+def health_check(db: Session = Depends(get_db)):
+    db.execute(text("SELECT 1"))
     return {"status": "ok", "version": "1.0.0"}
 
 

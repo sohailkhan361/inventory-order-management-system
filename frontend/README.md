@@ -60,6 +60,21 @@ The dashboard calls these paginated endpoints:
 
 Order line items are returned in the `order_items` field. The configured URL must include the backend `/api/v1` prefix.
 
+## Docker
+
+From the repository root:
+
+```bash
+docker build \
+  --build-arg VITE_API_URL=http://127.0.0.1:8000/api/v1 \
+  -t inventory-order-frontend ./frontend
+docker run --rm -p 8080:8080 inventory-order-frontend
+```
+
+Open `http://127.0.0.1:8080`. The image uses an unprivileged Nginx server and supports React Router deep links.
+
+Vercel does not run this Docker image. Deploy `frontend/` as a native Vite project and set `VITE_API_URL` in Vercel before building. See [the deployment guide](../docs/deployment.md).
+
 ## Troubleshooting
 
 - Network error: verify `curl http://127.0.0.1:8000/health`, the configured API URL, and that the backend is running.
