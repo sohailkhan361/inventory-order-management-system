@@ -115,6 +115,108 @@ docker build --build-arg VITE_API_URL=http://127.0.0.1:8000/api/v1 \
 2. **Want details?** → Read [Docker & Deployment Guide](docs/deployment.md)
 3. **Need help with environment setup?** → See [Environment Variables Reference](docs/environment-variables.md)
 
+---
+
+## 🐳 Building and Publishing the Backend Docker Image
+
+### 1. Authenticate with Docker Hub
+
+```bash
+docker login
+```
+
+Docker Desktop opens a browser window for authentication.
+
+After successful login:
+
+```text
+Login Succeeded
+```
+
+### 2. Navigate to Backend Directory
+
+```bash
+cd backend
+```
+
+### 3. Build Docker Image
+
+Build the backend image using the production Dockerfile:
+
+```bash
+docker build -t sohailkhan361/inventory-order-api:latest .
+```
+
+This command:
+
+* Reads the Dockerfile
+* Installs Python dependencies
+* Copies application source code
+* Creates a production-ready Docker image
+
+### 4. Verify Local Image
+
+List available Docker images:
+
+```bash
+docker images
+```
+
+Expected output:
+
+```text
+REPOSITORY                             TAG       IMAGE ID
+sohailkhan361/inventory-order-api      latest    <image-id>
+```
+
+### 5. Push Image to Docker Hub
+
+Publish the image:
+
+```bash
+docker push sohailkhan361/inventory-order-api:latest
+```
+
+Successful output:
+
+```text
+latest: digest: sha256:9baf6a90b983ea91b81f01bea538f06d4687387c6beac0206444570bfb455d92
+```
+
+### 6. Pull Image from Docker Hub
+
+Anyone can download the image using:
+
+```bash
+docker pull sohailkhan361/inventory-order-api:latest
+```
+
+### 7. Run Container Locally
+
+```bash
+docker run -p 8000:8000 sohailkhan361/inventory-order-api:latest
+```
+
+Application becomes available at:
+
+```text
+http://localhost:8000
+```
+
+Swagger Documentation:
+
+```text
+http://localhost:8000/docs
+```
+
+### Docker Hub Repository
+
+```text
+https://hub.docker.com/r/sohailkhan361/inventory-order-api
+```
+
+---
+
 ## Verified commands
 
 The following were run successfully on 2026-06-20:
