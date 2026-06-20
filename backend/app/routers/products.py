@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.database.session import get_db
 from app.schemas.product import (
-    ProductCreate, ProductUpdate, ProductResponse, ProductListResponse
+    ProductCreate, ProductUpdate, ProductPutUpdate, ProductResponse, ProductListResponse
 )
 from app.services.product_service import ProductService
 
@@ -45,18 +45,18 @@ def create_product(payload: ProductCreate, db: Session = Depends(get_db)):
     return ProductService.create(db, payload)
 
 
-@router.patch(
+@router.put(
     "/{product_id}",
     response_model=ProductResponse,
-    summary="Partially update a product",
-    description="Only the fields provided will be updated. SKU cannot be changed after creation."
+    summary="Fully replace a product",
+    description="All fields (name, price, quantity_in_stock) are required. SKU cannot be changed after creation."
 )
 def update_product(
     product_id: int,
-    payload: ProductUpdate,
+    payload: ProductPutUpdate,
     db: Session = Depends(get_db),
 ):
-    return ProductService.update(db, product_id, payload)
+    return ProductService.put(db, product_id, payload)
 
 
 @router.delete(

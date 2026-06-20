@@ -3,7 +3,7 @@ from sqlalchemy.exc import IntegrityError
 from fastapi import HTTPException, status
 
 from app.models.product import Product
-from app.schemas.product import ProductCreate, ProductUpdate
+from app.schemas.product import ProductCreate, ProductUpdate, ProductPutUpdate
 
 
 class ProductService:
@@ -52,7 +52,18 @@ class ProductService:
         return product
 
     @staticmethod
+    def put(db: Session, product_id: int, payload: ProductPutUpdate) -> Product:
+        """Full replace (PUT) — all fields are overwritten. SKU is not changed."""
+        product = ProductService.get_by_id(db, product_id)
+        for field, value in payload.model_dump().items():
+            setattr(product, field, value)
+        db.commit()
+        db.refresh(product)
+        return product
+
+    @staticmethod
     def update(db: Session, product_id: int, payload: ProductUpdate) -> Product:
+        """Partial update (PATCH) — only provided fields are overwritten."""
         product = ProductService.get_by_id(db, product_id)
         update_data = payload.model_dump(exclude_unset=True)
         for field, value in update_data.items():

@@ -25,9 +25,22 @@ class ProductCreate(ProductBase):
 
 
 class ProductUpdate(BaseModel):
+    """Partial update (PATCH) — all fields optional."""
     name: str | None = Field(None, min_length=1, max_length=255)
     price: Decimal | None = Field(None, ge=0, decimal_places=2)
     quantity_in_stock: int | None = Field(None, ge=0)
+
+
+class ProductPutUpdate(BaseModel):
+    """Full replace (PUT) — all fields required. SKU cannot be changed."""
+    name: str = Field(..., min_length=1, max_length=255, description="Product name")
+    price: Decimal = Field(..., ge=0, decimal_places=2, description="Unit price (non-negative)")
+    quantity_in_stock: int = Field(..., ge=0, description="Available stock (non-negative)")
+
+    @field_validator("name")
+    @classmethod
+    def name_strip(cls, v: str) -> str:
+        return v.strip()
 
 
 class ProductResponse(ProductBase):

@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.database.session import get_db
 from app.schemas.customer import (
-    CustomerCreate, CustomerUpdate, CustomerResponse, CustomerListResponse
+    CustomerCreate, CustomerResponse, CustomerListResponse
 )
 from app.services.customer_service import CustomerService
 
@@ -42,20 +42,6 @@ def get_customer(customer_id: int, db: Session = Depends(get_db)):
 )
 def create_customer(payload: CustomerCreate, db: Session = Depends(get_db)):
     return CustomerService.create(db, payload)
-
-
-@router.patch(
-    "/{customer_id}",
-    response_model=CustomerResponse,
-    summary="Partially update a customer",
-    description="Only full_name and phone_number can be updated. Email cannot be changed."
-)
-def update_customer(
-    customer_id: int,
-    payload: CustomerUpdate,
-    db: Session = Depends(get_db),
-):
-    return CustomerService.update(db, customer_id, payload)
 
 
 @router.delete(
